@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { photos } from "@/data/photos";
 
 export default function GalleryPage() {
@@ -14,6 +14,38 @@ export default function GalleryPage() {
     setSelectedIndex(null);
   };
 
+  useEffect(() => {
+    if (selectedIndex === null) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        closeLightbox();
+      }
+
+      if (event.key === "ArrowRight") {
+        const nextIndex = (selectedIndex + 1) % photos.length;
+
+        setSelectedIndex(nextIndex);
+        setSelectedPhoto(photos[nextIndex].src);
+      }
+
+      if (event.key === "ArrowLeft") {
+        const previousIndex =
+          (selectedIndex - 1 + photos.length) % photos.length;
+
+        setSelectedIndex(previousIndex);
+        setSelectedPhoto(photos[previousIndex].src);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedIndex]);
+
+  
   return (
     <main className="min-h-screen bg-[#10110f] px-5 py-12 text-[#f4f0e8] sm:px-8 sm:py-16 lg:px-12">
       <div className="mx-auto max-w-7xl">
