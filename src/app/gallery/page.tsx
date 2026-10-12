@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -10,6 +9,7 @@ export default function GalleryPage() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Get all unique categories dynamically.
   const categories = [
@@ -18,10 +18,17 @@ export default function GalleryPage() {
   ];
 
   // Filter photos based on the selected category.
-  const filteredPhotos =
-    selectedCategory === "All"
-      ? photos
-      : photos.filter((photo) => photo.category === selectedCategory);
+
+  const filteredPhotos = photos.filter((photo) => {
+    const matchesCategory =
+      selectedCategory === "All" || photo.category === selectedCategory;
+
+    const matchesSearch = photo.title
+      .toLowerCase()
+      .includes(searchQuery.trim().toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
 
   // Close the lightbox and reset its state.
   const closeLightbox = () => {
@@ -57,8 +64,7 @@ export default function GalleryPage() {
 
       if (event.key === "ArrowLeft") {
         const previousIndex =
-          (selectedIndex - 1 + filteredPhotos.length) %
-          filteredPhotos.length;
+          (selectedIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
 
         setSelectedIndex(previousIndex);
         setSelectedPhoto(filteredPhotos[previousIndex].src);
@@ -88,14 +94,31 @@ export default function GalleryPage() {
             My Photography
           </p>
 
-          <h1 className="text-4xl font-light sm:text-5xl">
-            All Photographs
-          </h1>
+          <h1 className="text-4xl font-light sm:text-5xl">All Photographs</h1>
 
           <p className="mt-4 text-sm text-white/50">
-            A collection of {filteredPhotos.length} moments captured through
-            my lens.
+            A collection of {filteredPhotos.length} moments captured through my
+            lens.
           </p>
+        </div>
+
+        {/* Photo Search */}
+        <div className="mb-6 max-w-md">
+          <label
+            htmlFor="photo-search"
+            className="mb-2 block text-sm text-white/60"
+          >
+            Search photographs
+          </label>
+
+          <input
+            id="photo-search"
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder="Search by photo name..."
+            className="w-full border border-white/15 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#b9a887]"
+          />
         </div>
 
         {/* Category Filters */}
@@ -121,33 +144,38 @@ export default function GalleryPage() {
         </div>
 
         {/* Photography Grid */}
-        <div className="grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-          {filteredPhotos.map((photo) => (
-            <article
-              key={photo.id}
-              className="group cursor-pointer"
-              onClick={() => openLightbox(photo.id)}
-            >
-              <div className="relative aspect-[4/3] overflow-hidden bg-white/5">
-                <Image
-                  src={photo.src}
-                  alt={photo.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition duration-700 group-hover:scale-105"
-                />
-              </div>
 
-              <div className="mt-3">
-                <h2 className="text-base font-medium">{photo.title}</h2>
+        {/* Photography Grid */}
+        {filteredPhotos.length > 0 ? (
+          <div className="grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredPhotos.map((photo) => (
+              <article
+                key={photo.id}
+                className="group cursor-pointer"
+                onClick={() => openLightbox(photo.id)}
+              >
+                <div className="relative aspect-[4/3] overflow-hidden bg-white/5">
+                  <Image
+                    src={photo.src}
+                    alt={photo.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition duration-700 group-hover:scale-105"
+                  />
+                </div>
 
-                <p className="mt-1 text-xs text-white/50">
-                  {photo.category}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
+                <div className="mt-3">
+                  <h2 className="text-base font-medium">{photo.title}</h2>
+                  <p className="mt-1 text-xs text-white/50">{photo.category}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="py-16 text-center text-sm text-white/50">
+            No photographs found in this category.
+          </p>
+        )}
 
         {/* Lightbox */}
         {selectedPhoto !== null && selectedIndex !== null && (
@@ -211,8 +239,7 @@ export default function GalleryPage() {
               <button
                 type="button"
                 onClick={() => {
-                  const nextIndex =
-                    (selectedIndex + 1) % filteredPhotos.length;
+                  const nextIndex = (selectedIndex + 1) % filteredPhotos.length;
 
                   setSelectedIndex(nextIndex);
                   setSelectedPhoto(filteredPhotos[nextIndex].src);
