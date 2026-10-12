@@ -9,6 +9,11 @@ export default function GalleryPage() {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
+  const closeLightbox = () => {
+    setSelectedPhoto(null);
+    setSelectedIndex(null);
+  };
+
   return (
     <main className="min-h-screen bg-[#10110f] px-5 py-12 text-[#f4f0e8] sm:px-8 sm:py-16 lg:px-12">
       <div className="mx-auto max-w-7xl">
@@ -67,11 +72,11 @@ export default function GalleryPage() {
         {selectedPhoto && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-            onClick={() => setSelectedPhoto(null)}
+            onClick={closeLightbox}
           >
             <button
               type="button"
-              onClick={() => setSelectedPhoto(null)}
+              onClick={closeLightbox}
               className="absolute top-5 right-5 z-10 text-4xl text-white transition hover:text-[#b9a887]"
               aria-label="Close image"
             >
@@ -108,6 +113,19 @@ export default function GalleryPage() {
                 sizes="100vw"
                 className="object-contain"
               />
+
+              {selectedIndex !== null && (
+                <div className="absolute right-0 bottom-0 left-0 z-10 bg-black/60 px-4 py-3 text-center">
+                  <p className="text-sm font-medium text-white">
+                    {photos[selectedIndex].title}
+                  </p>
+
+                  <p className="mt-1 text-xs text-white/60">
+                    {selectedIndex + 1} / {photos.length}
+                  </p>
+                </div>
+              )}
+
               {/* Next  */}
               <button
                 type="button"
