@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { Photo } from "@/data/photos";
 import Lightbox from "@/components/Lightbox";
+import Link from "next/link";
 
 type AlbumGalleryProps = {
   photos: Photo[];
@@ -107,6 +108,14 @@ export default function AlbumGallery({ photos }: AlbumGalleryProps) {
                   <p className="mt-1 text-xs text-white/50">{photo.category}</p>
                 </div>
               </button>
+
+              <Link
+                href={`/photos/${photo.id}`}
+                className="mt-3 inline-flex items-center gap-2 text-xs text-[#b9a887] transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#b9a887]"
+              >
+                View Details
+                <span aria-hidden="true">→</span>
+              </Link>
             </article>
           ))}
         </div>

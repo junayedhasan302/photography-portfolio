@@ -233,6 +233,14 @@ export default function GalleryPage() {
                     </p>
                   </div>
                 </button>
+
+                <Link
+                  href={`/photos/${photo.id}`}
+                  className="mt-3 inline-flex items-center gap-2 text-xs text-[#b9a887] transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#b9a887]"
+                >
+                  View Details
+                  <span aria-hidden="true">→</span>
+                </Link>
               </article>
             ))}
           </div>

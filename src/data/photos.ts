@@ -3,6 +3,7 @@ export type Photo = {
   title: string;
   category: string;
   src: string;
+  description?: string;
 };
 
 export const photos: Photo[] = [
@@ -403,7 +404,6 @@ export const photos: Photo[] = [
     src: "/images/photography/kandari-hushiyar.jpg",
   },
 ];
-
 
 export const featuredPhotos: Photo[] = [
   {
