@@ -17,8 +17,7 @@ export default function GalleryPage() {
     ...Array.from(new Set(photos.map((photo) => photo.category))),
   ];
 
-  // Filter photos based on the selected category.
-
+  // Filter photos by category and search query.
   const filteredPhotos = photos.filter((photo) => {
     const matchesCategory =
       selectedCategory === "All" || photo.category === selectedCategory;
@@ -46,7 +45,28 @@ export default function GalleryPage() {
     setSelectedPhoto(filteredPhotos[index].src);
   };
 
-  // Navigate between photos using the keyboard.
+  // Navigate to the next photo.
+  const showNextPhoto = () => {
+    if (selectedIndex === null || filteredPhotos.length === 0) return;
+
+    const nextIndex = (selectedIndex + 1) % filteredPhotos.length;
+
+    setSelectedIndex(nextIndex);
+    setSelectedPhoto(filteredPhotos[nextIndex].src);
+  };
+
+  // Navigate to the previous photo.
+  const showPreviousPhoto = () => {
+    if (selectedIndex === null || filteredPhotos.length === 0) return;
+
+    const previousIndex =
+      (selectedIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
+
+    setSelectedIndex(previousIndex);
+    setSelectedPhoto(filteredPhotos[previousIndex].src);
+  };
+
+  // Handle keyboard navigation while the lightbox is open.
   useEffect(() => {
     if (selectedIndex === null) return;
 
@@ -56,18 +76,13 @@ export default function GalleryPage() {
       }
 
       if (event.key === "ArrowRight") {
-        const nextIndex = (selectedIndex + 1) % filteredPhotos.length;
-
-        setSelectedIndex(nextIndex);
-        setSelectedPhoto(filteredPhotos[nextIndex].src);
+        event.preventDefault();
+        showNextPhoto();
       }
 
       if (event.key === "ArrowLeft") {
-        const previousIndex =
-          (selectedIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
-
-        setSelectedIndex(previousIndex);
-        setSelectedPhoto(filteredPhotos[previousIndex].src);
+        event.preventDefault();
+        showPreviousPhoto();
       }
     };
 
@@ -78,9 +93,17 @@ export default function GalleryPage() {
     };
   }, [selectedIndex, filteredPhotos]);
 
+  // Reset search, category, and lightbox.
+  const resetFilters = () => {
+    setSearchQuery("");
+    setSelectedCategory("All");
+    closeLightbox();
+  };
+
   return (
     <main className="min-h-screen bg-[#10110f] px-5 py-12 text-[#f4f0e8] sm:px-8 sm:py-16 lg:px-12">
       <div className="mx-auto max-w-7xl">
+        {/* Back to Home */}
         <Link
           href="/"
           className="text-sm text-white/60 transition hover:text-white"
@@ -94,7 +117,9 @@ export default function GalleryPage() {
             My Photography
           </p>
 
-          <h1 className="text-4xl font-light sm:text-5xl">All Photographs</h1>
+          <h1 className="text-4xl font-light sm:text-5xl">
+            All Photographs
+          </h1>
 
           <p className="mt-4 text-sm text-white/50">
             A collection of {filteredPhotos.length} moments captured through my
@@ -119,18 +144,18 @@ export default function GalleryPage() {
             placeholder="Search by photo name..."
             className="w-full border border-white/15 bg-white/[0.03] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#b9a887]"
           />
-        </div>
 
-        {/* Clear Search INput */}
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => setSearchQuery("")}
-            className="mt-2 text-xs text-[#b9a887] transition hover:text-white"
-          >
-            Clear search ×
-          </button>
-        )}
+          {/* Clear Search */}
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="mt-2 text-xs text-[#b9a887] transition hover:text-white"
+            >
+              Clear search ×
+            </button>
+          )}
+        </div>
 
         {/* Category Filters */}
         <div className="mb-8 flex flex-wrap gap-3">
@@ -159,35 +184,53 @@ export default function GalleryPage() {
           Showing {filteredPhotos.length} of {photos.length} photographs
         </p>
 
+        {/* Reset All Filters */}
+        {(searchQuery || selectedCategory !== "All") && (
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="mb-6 text-sm text-[#b9a887] transition hover:text-white"
+          >
+            Reset all filters ↺
+          </button>
+        )}
+
         {/* Photography Grid */}
         {filteredPhotos.length > 0 ? (
           <div className="grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {filteredPhotos.map((photo) => (
-              <article
-                key={photo.id}
-                className="group cursor-pointer"
-                onClick={() => openLightbox(photo.id)}
-              >
-                <div className="relative aspect-[4/3] overflow-hidden bg-white/5">
-                  <Image
-                    src={photo.src}
-                    alt={photo.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition duration-700 group-hover:scale-105"
-                  />
-                </div>
+              <article key={photo.id} className="group">
+                {/* A button makes each photo keyboard-accessible. */}
+                <button
+                  type="button"
+                  onClick={() => openLightbox(photo.id)}
+                  aria-label={`View ${photo.title}`}
+                  className="block w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#b9a887]"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden bg-white/5">
+                    <Image
+                      src={photo.src}
+                      alt={photo.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition duration-700 group-hover:scale-105"
+                    />
+                  </div>
 
-                <div className="mt-3">
-                  <h2 className="text-base font-medium">{photo.title}</h2>
-                  <p className="mt-1 text-xs text-white/50">{photo.category}</p>
-                </div>
+                  <div className="mt-3">
+                    <h2 className="text-base font-medium">{photo.title}</h2>
+
+                    <p className="mt-1 text-xs text-white/50">
+                      {photo.category}
+                    </p>
+                  </div>
+                </button>
               </article>
             ))}
           </div>
         ) : (
           <p className="py-16 text-center text-sm text-white/50">
-            No photographs found in this category.
+            No photographs found. Try another search or category.
           </p>
         )}
 
@@ -215,14 +258,7 @@ export default function GalleryPage() {
               {/* Previous Button */}
               <button
                 type="button"
-                onClick={() => {
-                  const previousIndex =
-                    (selectedIndex - 1 + filteredPhotos.length) %
-                    filteredPhotos.length;
-
-                  setSelectedIndex(previousIndex);
-                  setSelectedPhoto(filteredPhotos[previousIndex].src);
-                }}
+                onClick={showPreviousPhoto}
                 className="absolute top-1/2 left-2 z-10 -translate-y-1/2 bg-black/50 px-4 py-3 text-2xl text-white transition hover:bg-black/80 sm:left-4"
                 aria-label="Previous photo"
               >
@@ -252,12 +288,7 @@ export default function GalleryPage() {
               {/* Next Button */}
               <button
                 type="button"
-                onClick={() => {
-                  const nextIndex = (selectedIndex + 1) % filteredPhotos.length;
-
-                  setSelectedIndex(nextIndex);
-                  setSelectedPhoto(filteredPhotos[nextIndex].src);
-                }}
+                onClick={showNextPhoto}
                 className="absolute top-1/2 right-2 z-10 -translate-y-1/2 bg-black/50 px-4 py-3 text-2xl text-white transition hover:bg-black/80 sm:right-4"
                 aria-label="Next photo"
               >
