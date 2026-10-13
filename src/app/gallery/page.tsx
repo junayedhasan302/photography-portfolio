@@ -121,6 +121,17 @@ export default function GalleryPage() {
           />
         </div>
 
+        {/* Clear Search INput */}
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery("")}
+            className="mt-2 text-xs text-[#b9a887] transition hover:text-white"
+          >
+            Clear search ×
+          </button>
+        )}
+
         {/* Category Filters */}
         <div className="mb-8 flex flex-wrap gap-3">
           {categories.map((category) => (
@@ -143,7 +154,10 @@ export default function GalleryPage() {
           ))}
         </div>
 
-        {/* Photography Grid */}
+        {/* Search Results Count */}
+        <p className="mb-5 text-xs text-white/40">
+          Showing {filteredPhotos.length} of {photos.length} photographs
+        </p>
 
         {/* Photography Grid */}
         {filteredPhotos.length > 0 ? (
