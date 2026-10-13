@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Photo } from "@/data/photos";
 import Lightbox from "@/components/Lightbox";
 
@@ -11,10 +11,21 @@ type AlbumGalleryProps = {
 
 export default function AlbumGallery({ photos }: AlbumGalleryProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const photoButtonRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
+  const previousPhotoId = useRef<number | null>(null);
 
   // Close the lightbox.
+
   const closeLightbox = () => {
     setSelectedIndex(null);
+
+    requestAnimationFrame(() => {
+      const photoId = previousPhotoId.current;
+
+      if (photoId !== null) {
+        photoButtonRefs.current.get(photoId)?.focus();
+      }
+    });
   };
 
   // Navigate to the next photo.
@@ -66,8 +77,18 @@ export default function AlbumGallery({ photos }: AlbumGalleryProps) {
           {photos.map((photo, index) => (
             <article key={photo.id} className="group">
               <button
+                ref={(element) => {
+                  if (element) {
+                    photoButtonRefs.current.set(photo.id, element);
+                  } else {
+                    photoButtonRefs.current.delete(photo.id);
+                  }
+                }}
                 type="button"
-                onClick={() => setSelectedIndex(index)}
+                onClick={() => {
+                  previousPhotoId.current = photo.id;
+                  setSelectedIndex(index);
+                }}
                 aria-label={`View ${photo.title}`}
                 className="block w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#b9a887]"
               >

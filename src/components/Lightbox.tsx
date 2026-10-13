@@ -1,3 +1,4 @@
+"use client"
 import type { Photo } from "@/data/photos";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
@@ -18,16 +19,54 @@ export default function Lightbox({
   onPrevious,
 }: LightboxProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const lightboxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     closeButtonRef.current?.focus();
   }, []);
   const selectedPhoto = photos[selectedIndex];
 
+  const getFocusableElements = () => {
+    return lightboxRef.current?.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
+  };
+
+  useEffect(() => {
+    const handleTabKey = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+
+      const focusableElements = getFocusableElements();
+
+      if (!focusableElements || focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleTabKey);
+
+    return () => {
+      document.removeEventListener("keydown", handleTabKey);
+    };
+  }, []);
+
   if (!selectedPhoto) return null;
 
   return (
     <div
+      ref={lightboxRef}
       role="dialog"
       aria-modal="true"
       aria-label="Photo viewer"
