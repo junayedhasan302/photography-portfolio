@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -5,7 +6,7 @@ export default function Hero() {
   return (
     <section className="mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 sm:px-8 sm:py-28 lg:grid-cols-2 lg:px-12 lg:py-32">
       <div>
-        <p className="mb-5 text-xs tracking-[0.3em] text-[#b9a887] uppercase">
+        <p className="mb-5 text-xs tracking-[0.3em] text-accent uppercase">
           Photographer & Visual Storyteller
         </p>
 
@@ -13,27 +14,27 @@ export default function Hero() {
           Stories, seen differently.
         </h1>
 
-        <p className="mt-6 max-w-md text-sm leading-7 text-white/60 sm:text-base">
+        <p className="mt-6 max-w-md text-sm leading-7 text-muted sm:text-base">
           Capturing meaningful moments, everyday beauty, and stories hidden in
           the ordinary world.
         </p>
 
         <Link
           href="#work"
-          className="mt-8 inline-block border border-white/25 px-6 py-3 text-sm transition hover:bg-white hover:text-black"
+          className="mt-8 inline-block border border-foreground/25 px-6 py-3 text-sm transition hover:bg-foreground hover:text-background focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
         >
           Explore My Work
         </Link>
       </div>
 
-      <div className="relative aspect-[4/5] overflow-hidden bg-white/5">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-sm bg-surface">
         <Image
           src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e"
           alt="Mountain landscape photographed during golden hour"
           fill
           priority
           sizes="(max-width: 1024px) 100vw, 50vw"
-          className="object-cover"
+          className="object-cover transition duration-700 hover:scale-[1.02]"
         />
       </div>
     </section>

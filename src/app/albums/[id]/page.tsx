@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { albums } from "@/data/albums";
 import { photos } from "@/data/photos";
 import AlbumGallery from "@/components/AlbumGallery";
+import Navbar from "@/components/Navbar";
 
 type AlbumPageProps = {
   params: Promise<{ id: string }>;
@@ -25,38 +26,42 @@ export default async function AlbumDetailsPage({
   );
 
   return (
-    <main className="min-h-screen bg-[#10110f] px-5 py-12 text-[#f4f0e8] sm:px-8 sm:py-16 lg:px-12">
-      <div className="mx-auto max-w-7xl">
-        {/* Back to Home */}
-        <Link
-          href="/"
-          className="text-sm text-white/60 transition hover:text-white"
-        >
-          ← Back to Home
-        </Link>
+    <>
+      <Navbar />
 
-        {/* Album Heading */}
-        <div className="mt-10 mb-10">
-          <p className="mb-3 text-xs tracking-[0.3em] text-[#b9a887] uppercase">
-            Photography Album
-          </p>
+      <main className="min-h-screen bg-background px-5 py-12 text-foreground sm:px-8 sm:py-16 lg:px-12">
+        <div className="mx-auto max-w-7xl">
+          {/* Back to Home */}
+          <Link
+            href="/"
+            className="text-sm text-muted transition hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          >
+            ← Back to Home
+          </Link>
 
-          <h1 className="text-4xl font-light sm:text-5xl">
-            {album.title}
-          </h1>
+          {/* Album Heading */}
+          <div className="mt-10 mb-10">
+            <p className="mb-3 text-xs tracking-[0.3em] text-accent uppercase">
+              Photography Album
+            </p>
 
-          <p className="mt-4 text-sm text-white/50">
-            {album.description}
-          </p>
+            <h1 className="text-4xl font-light sm:text-5xl">
+              {album.title}
+            </h1>
 
-          <p className="mt-3 text-xs text-[#b9a887]">
-            {albumPhotos.length} Photographs
-          </p>
+            <p className="mt-4 text-sm leading-7 text-muted">
+              {album.description}
+            </p>
+
+            <p className="mt-3 text-xs text-accent">
+              {albumPhotos.length} Photographs
+            </p>
+          </div>
+
+          {/* Album Gallery */}
+          <AlbumGallery photos={albumPhotos} />
         </div>
-
-        {/* Album Gallery */}
-        <AlbumGallery photos={albumPhotos} />
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

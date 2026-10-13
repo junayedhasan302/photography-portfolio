@@ -18,18 +18,18 @@ export default function AboutSection() {
         </div>
 
         <div className="max-w-xl">
-          <p className="text-sm leading-8 text-white/60 sm:text-base">
+          <p className="text-sm leading-8 text-muted sm:text-base">
             Hi, I&apos;m Junayed — a photographer and visual storyteller who
             loves finding extraordinary stories in ordinary moments.
           </p>
 
-          <p className="mt-5 text-sm leading-8 text-white/60 sm:text-base">
+          <p className="text-sm leading-8 text-muted sm:text-base">
             From busy city streets to quiet landscapes, I try to capture
             authentic emotions, beautiful light, and the small details that make
             every moment unique.
           </p>
 
-          <p className="mt-5 text-sm leading-8 text-white/60 sm:text-base">
+          <p className="text-sm leading-8 text-muted sm:text-base">
             For me, photography is more than taking pictures. It&apos;s about
             preserving memories and sharing the way I experience the world.
           </p>

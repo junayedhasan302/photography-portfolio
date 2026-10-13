@@ -1,10 +1,11 @@
+
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Photo } from "@/data/photos";
 import Lightbox from "@/components/Lightbox";
-import Link from "next/link";
 
 type AlbumGalleryProps = {
   photos: Photo[];
@@ -16,7 +17,6 @@ export default function AlbumGallery({ photos }: AlbumGalleryProps) {
   const previousPhotoId = useRef<number | null>(null);
 
   // Close the lightbox.
-
   const closeLightbox = () => {
     setSelectedIndex(null);
 
@@ -91,9 +91,9 @@ export default function AlbumGallery({ photos }: AlbumGalleryProps) {
                   setSelectedIndex(index);
                 }}
                 aria-label={`View ${photo.title}`}
-                className="block w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#b9a887]"
+                className="block w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
-                <div className="relative aspect-[4/3] overflow-hidden bg-white/5">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-surface-hover">
                   <Image
                     src={photo.src}
                     alt={photo.title}
@@ -104,14 +104,19 @@ export default function AlbumGallery({ photos }: AlbumGalleryProps) {
                 </div>
 
                 <div className="mt-3">
-                  <h2 className="text-base font-medium">{photo.title}</h2>
-                  <p className="mt-1 text-xs text-white/50">{photo.category}</p>
+                  <h2 className="text-base font-medium text-foreground">
+                    {photo.title}
+                  </h2>
+
+                  <p className="mt-1 text-xs text-muted">
+                    {photo.category}
+                  </p>
                 </div>
               </button>
 
               <Link
                 href={`/photos/${photo.id}`}
-                className="mt-3 inline-flex items-center gap-2 text-xs text-[#b9a887] transition hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#b9a887]"
+                className="mt-3 inline-flex items-center gap-2 text-xs text-accent transition hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
               >
                 View Details
                 <span aria-hidden="true">→</span>
@@ -120,7 +125,7 @@ export default function AlbumGallery({ photos }: AlbumGalleryProps) {
           ))}
         </div>
       ) : (
-        <p className="py-16 text-center text-sm text-white/50">
+        <p className="py-16 text-center text-sm text-muted">
           No photographs have been added to this album yet.
         </p>
       )}

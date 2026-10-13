@@ -66,10 +66,9 @@ export default function Lightbox({
   }, [selectedIndex]);
 
   const getFocusableElements = useCallback(() => {
-    const elements =
-      lightboxRef.current?.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
+    const elements = lightboxRef.current?.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    );
 
     return Array.from(elements ?? []).filter(
       (element) =>
@@ -182,7 +181,7 @@ export default function Lightbox({
       role="dialog"
       aria-modal="true"
       aria-label="Photo viewer"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-3 sm:p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/95 p-3 sm:p-4"
       onClick={onClose}
     >
       {/* Close Button */}
@@ -191,7 +190,7 @@ export default function Lightbox({
         type="button"
         onClick={onClose}
         aria-label="Close image"
-        className="absolute top-3 right-3 z-20 flex size-11 items-center justify-center rounded-full bg-black/50 text-3xl text-white transition-colors hover:bg-white/20 hover:text-[#b9a887] sm:top-5 sm:right-5"
+        className="absolute top-3 right-3 z-20 flex size-11 items-center justify-center rounded-full border border-border bg-surface/80 text-3xl text-foreground transition-colors hover:bg-surface-hover hover:text-accent sm:top-5 sm:right-5"
       >
         &times;
       </button>
@@ -214,7 +213,7 @@ export default function Lightbox({
             onPrevious();
           }}
           aria-label="Previous photo"
-          className="absolute top-1/2 left-1 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-3xl text-white transition-colors hover:bg-black/80 sm:left-4 sm:size-12"
+          className="absolute top-1/2 left-1 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface/80 text-3xl text-foreground transition-colors hover:bg-surface-hover hover:text-accent sm:left-4 sm:size-12"
         >
           ‹
         </button>
@@ -241,21 +240,21 @@ export default function Lightbox({
 
         {/* Photo Information */}
         <div
-          className={`absolute right-0 bottom-0 left-0 z-10 bg-black/70 px-12 py-3 text-center transition-opacity duration-200 ${
+          className={`absolute right-0 bottom-0 left-0 z-10 border-t border-border bg-surface/90 px-12 py-3 text-center transition-opacity duration-200 ${
             isAnimating ? "opacity-70" : "opacity-100"
           }`}
           aria-live="polite"
           aria-atomic="true"
         >
-          <p className="text-sm font-medium text-white sm:text-base">
+          <p className="text-sm font-medium text-foreground sm:text-base">
             {selectedPhoto.title}
           </p>
 
-          <p className="mt-1 text-xs text-white/60">
+          <p className="mt-1 text-xs text-muted">
             {selectedIndex + 1} / {photos.length}
           </p>
 
-          <p className="mt-1 text-[10px] text-white/40 sm:hidden">
+          <p className="mt-1 text-[10px] text-muted sm:hidden">
             Swipe to navigate
           </p>
         </div>
@@ -268,7 +267,7 @@ export default function Lightbox({
             onNext();
           }}
           aria-label="Next photo"
-          className="absolute top-1/2 right-1 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-3xl text-white transition-colors hover:bg-black/80 sm:right-4 sm:size-12"
+          className="absolute top-1/2 right-1 z-20 flex size-10 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface/80 text-3xl text-foreground transition-colors hover:bg-surface-hover hover:text-accent sm:right-4 sm:size-12"
         >
           ›
         </button>
@@ -280,6 +279,7 @@ export default function Lightbox({
             opacity: 0;
             transform: translateX(calc(var(--slide-direction) * 24px));
           }
+
           to {
             opacity: 1;
             transform: translateX(0);
