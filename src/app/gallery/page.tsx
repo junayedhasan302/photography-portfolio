@@ -2,12 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { photos } from "@/data/photos";
+import Lightbox from "@/components/Lightbox";
 
 export default function GalleryPage() {
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const photoButtonRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
+  const previousPhotoId = useRef<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -29,10 +31,18 @@ export default function GalleryPage() {
     return matchesCategory && matchesSearch;
   });
 
-  // Close the lightbox and reset its state.
+  // Close the lightbox.
+
   const closeLightbox = () => {
-    setSelectedPhoto(null);
     setSelectedIndex(null);
+
+    requestAnimationFrame(() => {
+      const photoId = previousPhotoId.current;
+
+      if (photoId !== null) {
+        photoButtonRefs.current.get(photoId)?.focus();
+      }
+    });
   };
 
   // Open a photo in the lightbox.
@@ -40,30 +50,24 @@ export default function GalleryPage() {
     const index = filteredPhotos.findIndex((photo) => photo.id === photoId);
 
     if (index === -1) return;
-
+    previousPhotoId.current = filteredPhotos[index].id;
     setSelectedIndex(index);
-    setSelectedPhoto(filteredPhotos[index].src);
   };
 
   // Navigate to the next photo.
   const showNextPhoto = () => {
     if (selectedIndex === null || filteredPhotos.length === 0) return;
 
-    const nextIndex = (selectedIndex + 1) % filteredPhotos.length;
-
-    setSelectedIndex(nextIndex);
-    setSelectedPhoto(filteredPhotos[nextIndex].src);
+    setSelectedIndex((selectedIndex + 1) % filteredPhotos.length);
   };
 
   // Navigate to the previous photo.
   const showPreviousPhoto = () => {
     if (selectedIndex === null || filteredPhotos.length === 0) return;
 
-    const previousIndex =
-      (selectedIndex - 1 + filteredPhotos.length) % filteredPhotos.length;
-
-    setSelectedIndex(previousIndex);
-    setSelectedPhoto(filteredPhotos[previousIndex].src);
+    setSelectedIndex(
+      (selectedIndex - 1 + filteredPhotos.length) % filteredPhotos.length,
+    );
   };
 
   // Handle keyboard navigation while the lightbox is open.
@@ -117,9 +121,7 @@ export default function GalleryPage() {
             My Photography
           </p>
 
-          <h1 className="text-4xl font-light sm:text-5xl">
-            All Photographs
-          </h1>
+          <h1 className="text-4xl font-light sm:text-5xl">All Photographs</h1>
 
           <p className="mt-4 text-sm text-white/50">
             A collection of {filteredPhotos.length} moments captured through my
@@ -200,8 +202,14 @@ export default function GalleryPage() {
           <div className="grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {filteredPhotos.map((photo) => (
               <article key={photo.id} className="group">
-                {/* A button makes each photo keyboard-accessible. */}
                 <button
+                  ref={(element) => {
+                    if (element) {
+                      photoButtonRefs.current.set(photo.id, element);
+                    } else {
+                      photoButtonRefs.current.delete(photo.id);
+                    }
+                  }}
                   type="button"
                   onClick={() => openLightbox(photo.id)}
                   aria-label={`View ${photo.title}`}
@@ -234,68 +242,15 @@ export default function GalleryPage() {
           </p>
         )}
 
-        {/* Lightbox */}
-        {selectedPhoto !== null && selectedIndex !== null && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-            onClick={closeLightbox}
-          >
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={closeLightbox}
-              className="absolute top-5 right-5 z-20 text-4xl text-white transition hover:text-[#b9a887]"
-              aria-label="Close image"
-            >
-              &times;
-            </button>
-
-            {/* Image Container */}
-            <div
-              className="relative h-[80vh] w-full max-w-5xl"
-              onClick={(event) => event.stopPropagation()}
-            >
-              {/* Previous Button */}
-              <button
-                type="button"
-                onClick={showPreviousPhoto}
-                className="absolute top-1/2 left-2 z-10 -translate-y-1/2 bg-black/50 px-4 py-3 text-2xl text-white transition hover:bg-black/80 sm:left-4"
-                aria-label="Previous photo"
-              >
-                ‹
-              </button>
-
-              {/* Selected Photo */}
-              <Image
-                src={selectedPhoto}
-                alt={filteredPhotos[selectedIndex].title}
-                fill
-                sizes="100vw"
-                className="object-contain"
-              />
-
-              {/* Photo Information */}
-              <div className="absolute right-0 bottom-0 left-0 z-10 bg-black/60 px-4 py-3 text-center">
-                <p className="text-sm font-medium text-white">
-                  {filteredPhotos[selectedIndex].title}
-                </p>
-
-                <p className="mt-1 text-xs text-white/60">
-                  {selectedIndex + 1} / {filteredPhotos.length}
-                </p>
-              </div>
-
-              {/* Next Button */}
-              <button
-                type="button"
-                onClick={showNextPhoto}
-                className="absolute top-1/2 right-2 z-10 -translate-y-1/2 bg-black/50 px-4 py-3 text-2xl text-white transition hover:bg-black/80 sm:right-4"
-                aria-label="Next photo"
-              >
-                ›
-              </button>
-            </div>
-          </div>
+        {/* Reusable Lightbox */}
+        {selectedIndex !== null && (
+          <Lightbox
+            photos={filteredPhotos}
+            selectedIndex={selectedIndex}
+            onClose={closeLightbox}
+            onNext={showNextPhoto}
+            onPrevious={showPreviousPhoto}
+          />
         )}
       </div>
     </main>
