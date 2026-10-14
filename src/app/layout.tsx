@@ -1,4 +1,6 @@
+
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import ThemeProvider from "@/components/ThemeProvider";
 import "./globals.css";
@@ -22,14 +24,24 @@ export const metadata: Metadata = {
     "Explore the photography portfolio of Junayed Hasan, featuring street photography, nature, landscapes, and visual stories.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({
+  children,
+}: LayoutProps<"/">) {
+  const cookieStore = await cookies();
+  const savedTheme = cookieStore.get("portfolio-theme")?.value;
+
+  const initialTheme = savedTheme === "light" ? "light" : "dark";
+
   return (
     <html
       lang="en"
+      data-theme={initialTheme}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <ThemeProvider>{children}</ThemeProvider>
+      <body className="flex min-h-full flex-col">
+        <ThemeProvider initialTheme={initialTheme}>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

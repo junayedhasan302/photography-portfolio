@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from "next/image";
@@ -7,12 +8,23 @@ import { photos } from "@/data/photos";
 import Lightbox from "@/components/Lightbox";
 import Navbar from "@/components/Navbar";
 
+type GalleryView = "grid" | "original";
+
+type PhotoDimensions = {
+  width: number;
+  height: number;
+};
+
 export default function GalleryPage() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const photoButtonRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
   const previousPhotoId = useRef<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState<GalleryView>("grid");
+  const [photoDimensions, setPhotoDimensions] = useState<
+    Record<number, PhotoDimensions>
+  >({});
 
   // Get all unique categories dynamically.
   const categories = [
@@ -31,6 +43,35 @@ export default function GalleryPage() {
 
     return matchesCategory && matchesSearch;
   });
+
+  // Store each image's actual dimensions.
+  const handleImageLoad = (
+    photoId: number,
+    image: HTMLImageElement,
+  ) => {
+    const { naturalWidth, naturalHeight } = image;
+
+    if (!naturalWidth || !naturalHeight) return;
+
+    setPhotoDimensions((current) => {
+      const existing = current[photoId];
+
+      if (
+        existing?.width === naturalWidth &&
+        existing?.height === naturalHeight
+      ) {
+        return current;
+      }
+
+      return {
+        ...current,
+        [photoId]: {
+          width: naturalWidth,
+          height: naturalHeight,
+        },
+      };
+    });
+  };
 
   // Close the lightbox.
   const closeLightbox = () => {
@@ -108,6 +149,7 @@ export default function GalleryPage() {
   return (
     <>
       <Navbar />
+
       <main className="min-h-screen bg-background px-5 py-12 text-foreground sm:px-8 sm:py-16 lg:px-12">
         <div className="mx-auto max-w-7xl">
           {/* Back to Home */}
@@ -124,7 +166,9 @@ export default function GalleryPage() {
               My Photography
             </p>
 
-            <h1 className="text-4xl font-light sm:text-5xl">All Photographs</h1>
+            <h1 className="text-4xl font-light sm:text-5xl">
+              All Photographs
+            </h1>
 
             <p className="mt-4 text-sm text-muted">
               A collection of {filteredPhotos.length} moments captured through
@@ -150,7 +194,6 @@ export default function GalleryPage() {
               className="w-full rounded-sm border border-border bg-surface px-4 py-3 text-sm text-foreground outline-none transition placeholder:text-muted/70 focus:border-accent focus-visible:ring-2 focus-visible:ring-accent/30"
             />
 
-            {/* Clear Search */}
             {searchQuery && (
               <button
                 type="button"
@@ -184,10 +227,46 @@ export default function GalleryPage() {
             ))}
           </div>
 
-          {/* Search Results Count */}
-          <p className="mb-5 text-xs text-muted">
-            Showing {filteredPhotos.length} of {photos.length} photographs
-          </p>
+          {/* Results Count and View Toggle */}
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-muted">
+              Showing {filteredPhotos.length} of {photos.length} photographs
+            </p>
+
+            <div
+              role="group"
+              aria-label="Gallery layout"
+              className="inline-flex w-fit items-center rounded-sm border border-border p-1"
+            >
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                aria-pressed={viewMode === "grid"}
+                className={`rounded-sm px-3 py-2 text-xs transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:text-sm ${
+                  viewMode === "grid"
+                    ? "bg-accent text-background"
+                    : "text-muted hover:text-foreground"
+                }`}
+              >
+                <span aria-hidden="true">▦ </span>
+                Default Grid
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setViewMode("original")}
+                aria-pressed={viewMode === "original"}
+                className={`rounded-sm px-3 py-2 text-xs transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:text-sm ${
+                  viewMode === "original"
+                    ? "bg-accent text-background"
+                    : "text-muted hover:text-foreground"
+                }`}
+              >
+                <span aria-hidden="true">▥ </span>
+                Original Ratio
+              </button>
+            </div>
+          </div>
 
           {/* Reset All Filters */}
           {(searchQuery || selectedCategory !== "All") && (
@@ -200,52 +279,89 @@ export default function GalleryPage() {
             </button>
           )}
 
-          {/* Photography Grid */}
+          {/* Photography Gallery */}
           {filteredPhotos.length > 0 ? (
-            <div className="grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredPhotos.map((photo) => (
-                <article key={photo.id} className="group">
-                  <button
-                    ref={(element) => {
-                      if (element) {
-                        photoButtonRefs.current.set(photo.id, element);
-                      } else {
-                        photoButtonRefs.current.delete(photo.id);
-                      }
-                    }}
-                    type="button"
-                    onClick={() => openLightbox(photo.id)}
-                    aria-label={`View ${photo.title}`}
-                    className="block w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            <div
+              className={
+                viewMode === "grid"
+                  ? "grid grid-cols-1 gap-x-5 gap-y-8 sm:grid-cols-2 lg:grid-cols-3"
+                  : "columns-1 gap-x-5 sm:columns-2 lg:columns-3"
+              }
+            >
+              {filteredPhotos.map((photo) => {
+                const dimensions = photoDimensions[photo.id];
+
+                return (
+                  <article
+                    key={photo.id}
+                    className={`group ${
+                      viewMode === "original"
+                        ? "mb-8 break-inside-avoid"
+                        : ""
+                    }`}
                   >
-                    <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-surface-hover">
-                      <Image
-                        src={photo.src}
-                        alt={photo.title}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition duration-700 group-hover:scale-105"
-                      />
-                    </div>
+                    <button
+                      ref={(element) => {
+                        if (element) {
+                          photoButtonRefs.current.set(photo.id, element);
+                        } else {
+                          photoButtonRefs.current.delete(photo.id);
+                        }
+                      }}
+                      type="button"
+                      onClick={() => openLightbox(photo.id)}
+                      aria-label={`View ${photo.title}`}
+                      className="block w-full cursor-pointer text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                    >
+                      <div
+                        className={
+                          viewMode === "grid"
+                            ? "relative aspect-[4/3] overflow-hidden rounded-sm bg-surface-hover"
+                            : "overflow-hidden rounded-sm bg-surface-hover"
+                        }
+                      >
+                        <Image
+                          src={photo.src}
+                          alt={photo.title}
+                          width={dimensions?.width ?? 1200}
+                          height={dimensions?.height ?? 900}
+                          sizes={
+                            viewMode === "grid"
+                              ? "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                              : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          }
+                          onLoad={(event) =>
+                            handleImageLoad(photo.id, event.currentTarget)
+                          }
+                          className={
+                            viewMode === "grid"
+                              ? "h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                              : "h-auto w-full object-contain transition duration-700 group-hover:scale-[1.02]"
+                          }
+                        />
+                      </div>
 
-                    <div className="mt-3">
-                      <h2 className="text-base font-medium">{photo.title}</h2>
+                      <div className="mt-3">
+                        <h2 className="text-base font-medium">
+                          {photo.title}
+                        </h2>
 
-                      <p className="mt-1 text-xs text-muted">
-                        {photo.category}
-                      </p>
-                    </div>
-                  </button>
+                        <p className="mt-1 text-xs text-muted">
+                          {photo.category}
+                        </p>
+                      </div>
+                    </button>
 
-                  <Link
-                    href={`/photos/${photo.id}`}
-                    className="mt-3 inline-flex items-center gap-2 text-xs text-accent transition hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-                  >
-                    View Details
-                    <span aria-hidden="true">→</span>
-                  </Link>
-                </article>
-              ))}
+                    <Link
+                      href={`/photos/${photo.id}`}
+                      className="mt-3 inline-flex items-center gap-2 text-xs text-accent transition hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                    >
+                      View Details
+                      <span aria-hidden="true">→</span>
+                    </Link>
+                  </article>
+                );
+              })}
             </div>
           ) : (
             <p className="py-16 text-center text-sm text-muted">
