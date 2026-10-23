@@ -10,6 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { flushSync } from "react-dom";
 
 type Theme = "dark" | "light";
 
@@ -47,55 +48,89 @@ function saveTheme(theme: Theme) {
   }
 }
 
+function getSavedTheme(fallback: Theme): Theme {
+  try {
+    const cookieTheme = document.cookie
+      .split("; ")
+      .find((cookie) => cookie.startsWith("portfolio-theme="))
+      ?.split("=")[1];
+
+    const localTheme = localStorage.getItem("portfolio-theme");
+
+    if (cookieTheme === "light" || cookieTheme === "dark") {
+      return cookieTheme;
+    }
+
+    if (localTheme === "light" || localTheme === "dark") {
+      return localTheme;
+    }
+  } catch {
+    // Use the provided fallback when browser storage is unavailable.
+  }
+
+  return fallback;
+}
+
 export default function ThemeProvider({
   children,
   initialTheme,
 }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(initialTheme);
+
   const themeRef = useRef<Theme>(initialTheme);
   const transitionRef = useRef<ViewTransitionHandle | null>(null);
 
+  // Restore the saved theme after mounting.
   useEffect(() => {
-    try {
-      const cookieTheme = document.cookie
-        .split("; ")
-        .find((cookie) => cookie.startsWith("portfolio-theme="))
-        ?.split("=")[1];
+    const savedTheme = getSavedTheme(initialTheme);
 
-      const localTheme = localStorage.getItem("portfolio-theme");
+    themeRef.current = savedTheme;
+    saveTheme(savedTheme);
+    setTheme(savedTheme);
 
-      const savedTheme: Theme =
-        cookieTheme === "light" || cookieTheme === "dark"
-          ? cookieTheme
-          : localTheme === "light" || localTheme === "dark"
-            ? localTheme
-            : initialTheme;
+    return () => {
+      const activeTransition = transitionRef.current;
 
-      themeRef.current = savedTheme;
-      saveTheme(savedTheme);
-      setTheme(savedTheme);
-    } catch {
-      themeRef.current = initialTheme;
-      document.documentElement.dataset.theme = initialTheme;
-      setTheme(initialTheme);
-    }
+      transitionRef.current = null;
+      activeTransition?.skipTransition();
+    };
   }, [initialTheme]);
 
   const toggleTheme = useCallback((x?: number, y?: number) => {
+    // Count every click using the latest requested theme.
     const nextTheme: Theme =
       themeRef.current === "dark" ? "light" : "dark";
 
-    // Update the reference immediately for rapid clicks.
     themeRef.current = nextTheme;
 
     const root = document.documentElement;
     const viewDocument = document as ViewTransitionDocument;
+    const startViewTransition = viewDocument.startViewTransition;
 
-    // Use the center of the clicked button as the reveal origin.
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    // Cancel an active reveal before starting another one.
+    const previousTransition = transitionRef.current;
+
+    if (previousTransition) {
+      transitionRef.current = null;
+      previousTransition.skipTransition();
+    }
+
+    // Without animation, apply the theme immediately.
+    if (reduceMotion || !startViewTransition) {
+      saveTheme(nextTheme);
+      setTheme(nextTheme);
+      return;
+    }
+
+    // Use the clicked button's center as the reveal origin.
     const centerX = x ?? window.innerWidth / 2;
     const centerY = y ?? window.innerHeight / 2;
 
-    // Calculate a radius large enough to reach every viewport corner.
+    // Calculate a radius that covers all viewport corners.
     const radius = Math.ceil(
       Math.max(
         Math.hypot(centerX, centerY),
@@ -112,48 +147,38 @@ export default function ThemeProvider({
     root.style.setProperty("--theme-y", `${centerY}px`);
     root.style.setProperty("--theme-radius", `${radius}px`);
 
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    try {
+      const transition = startViewTransition.call(
+        viewDocument,
+        () => {
+          // Commit React's DOM update inside the transition callback.
+          // Read the latest value so rapid clicks are not lost.
+          const latestTheme = themeRef.current;
 
-    const startViewTransition = viewDocument.startViewTransition;
+          flushSync(() => {
+            saveTheme(latestTheme);
+            setTheme(latestTheme);
+          });
+        },
+      );
 
-    // Skip any previous animation instead of waiting for it to finish.
-    if (transitionRef.current) {
-      transitionRef.current.skipTransition();
-      transitionRef.current = null;
+      transitionRef.current = transition;
+
+      // Release only this transition's reference when it settles.
+      void transition.finished
+        .catch(() => {
+          // Skipping a transition during rapid clicks is expected.
+        })
+        .finally(() => {
+          if (transitionRef.current === transition) {
+            transitionRef.current = null;
+          }
+        });
+    } catch {
+      // Keep the theme functional if the browser rejects animation.
+      saveTheme(themeRef.current);
+      setTheme(themeRef.current);
     }
-
-    // Fall back to an immediate theme change when animation is unavailable.
-    if (reduceMotion || !startViewTransition) {
-      saveTheme(nextTheme);
-      setTheme(nextTheme);
-      return;
-    }
-
-    const transition = startViewTransition.call(
-      viewDocument,
-      () => {
-        // Always apply the latest requested theme.
-        const latestTheme = themeRef.current;
-
-        saveTheme(latestTheme);
-        setTheme(latestTheme);
-      },
-    );
-
-    transitionRef.current = transition;
-
-    // Clear the reference when this transition finishes.
-    void transition.finished
-      .catch(() => {
-        // A skipped transition is expected during rapid clicks.
-      })
-      .finally(() => {
-        if (transitionRef.current === transition) {
-          transitionRef.current = null;
-        }
-      });
   }, []);
 
   return (

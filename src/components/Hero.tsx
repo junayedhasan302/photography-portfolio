@@ -20,7 +20,7 @@ export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Rotate featured photos
+  // Rotate featured photos.
   useEffect(() => {
     if (photos.length < 2) return;
 
@@ -38,12 +38,12 @@ export default function Hero() {
 
     changePhoto();
 
-    const interval = setInterval(changePhoto, 30_000);
+    const interval = window.setInterval(changePhoto, 30_000);
 
-    return () => clearInterval(interval);
+    return () => window.clearInterval(interval);
   }, []);
 
-  // Draw signature trail
+  // Draw the signature trail.
   useEffect(() => {
     const section = sectionRef.current;
     const canvas = canvasRef.current;
@@ -54,12 +54,11 @@ export default function Hero() {
 
     if (!ctx) return;
 
-    // Respect reduced motion preferences
-    if (
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    ) {
-      return;
-    }
+    const motionQuery = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+
+    if (motionQuery.matches) return;
 
     let width = 0;
     let height = 0;
@@ -67,42 +66,37 @@ export default function Hero() {
 
     const points: SignaturePoint[] = [];
 
-    // Signature settings
     const trailDuration = 1800;
     const maxPoints = 500;
     const minPointDistance = 2.5;
 
-    // Main line color
     const LINE_COLOR = "#80683f";
-
-    // Outer glow color
     const GLOW_COLOR = "#BEBEBE";
-
-    // Leading tip color
     const TIP_COLOR = "#FFFFFF";
 
-    // Resize canvas
+    // Resize the canvas to match the section.
     function resizeCanvas() {
-      const rect = section!.getBoundingClientRect();
+      const rect = section.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
       width = rect.width;
       height = rect.height;
 
-      canvas!.width = Math.round(width * dpr);
-      canvas!.height = Math.round(height * dpr);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
 
-      canvas!.style.width = `${width}px`;
-      canvas!.style.height = `${height}px`;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
 
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      points.length = 0;
     }
 
-    // Track pointer movement
+    // Track pointer movement without drawing on touch screens.
     function handlePointerMove(event: PointerEvent) {
       if (event.pointerType === "touch") return;
 
-      const rect = section!.getBoundingClientRect();
+      const rect = section.getBoundingClientRect();
 
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
@@ -115,10 +109,8 @@ export default function Hero() {
         const dy = y - previous.y;
         const distance = Math.hypot(dx, dy);
 
-        // Ignore tiny pointer movements
         if (distance < minPointDistance) return;
 
-        // Interpolate fast movements
         const steps = Math.max(1, Math.ceil(distance / 2));
 
         for (let i = 1; i <= steps; i++) {
@@ -134,18 +126,17 @@ export default function Hero() {
         points.push({ x, y, time: now });
       }
 
-      // Limit stored points
       if (points.length > maxPoints) {
         points.splice(0, points.length - maxPoints);
       }
     }
 
-    // Draw smooth curves
+    // Draw smooth curves through the pointer points.
     function traceSignature() {
       if (points.length < 2) return;
 
-      ctx!.beginPath();
-      ctx!.moveTo(points[0].x, points[0].y);
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
 
       for (let i = 0; i < points.length - 1; i++) {
         const p0 = points[Math.max(0, i - 1)];
@@ -159,7 +150,7 @@ export default function Hero() {
         const cp2x = p2.x - (p3.x - p1.x) / 6;
         const cp2y = p2.y - (p3.y - p1.y) / 6;
 
-        ctx!.bezierCurveTo(
+        ctx.bezierCurveTo(
           cp1x,
           cp1y,
           cp2x,
@@ -170,11 +161,10 @@ export default function Hero() {
       }
     }
 
-    // Animate signature
+    // Animate and fade the signature trail.
     function draw(time: number) {
-      ctx!.clearRect(0, 0, width, height);
+      ctx.clearRect(0, 0, width, height);
 
-      // Remove expired points
       while (
         points.length > 0 &&
         time - points[0].time > trailDuration
@@ -187,44 +177,40 @@ export default function Hero() {
         const age = time - last.time;
         const opacity = Math.max(0, 1 - age / trailDuration);
 
-        ctx!.save();
+        ctx.save();
 
-        ctx!.lineCap = "round";
-        ctx!.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
 
-        // Draw subtle glow
         traceSignature();
-        ctx!.lineWidth = 2.2;
-        ctx!.strokeStyle = GLOW_COLOR;
-        ctx!.globalAlpha = 0.12;
-        ctx!.shadowBlur = 7;
-        ctx!.shadowColor = GLOW_COLOR;
-        ctx!.stroke();
+        ctx.lineWidth = 2.2;
+        ctx.strokeStyle = GLOW_COLOR;
+        ctx.globalAlpha = 0.12;
+        ctx.shadowBlur = 7;
+        ctx.shadowColor = GLOW_COLOR;
+        ctx.stroke();
 
-        // Draw fine signature
         traceSignature();
-        ctx!.lineWidth = 1.1;
-        ctx!.strokeStyle = LINE_COLOR;
-        ctx!.globalAlpha = 0.72 * opacity;
-        ctx!.shadowBlur = 0;
-        ctx!.stroke();
+        ctx.lineWidth = 1.1;
+        ctx.strokeStyle = LINE_COLOR;
+        ctx.globalAlpha = 0.72 * opacity;
+        ctx.shadowBlur = 0;
+        ctx.stroke();
 
-        // Highlight leading tip
         if (age < 180) {
-          ctx!.beginPath();
-          ctx!.arc(last.x, last.y, 1.1, 0, Math.PI * 2);
-          ctx!.fillStyle = TIP_COLOR;
-          ctx!.globalAlpha = 0.55 * opacity;
-          ctx!.fill();
+          ctx.beginPath();
+          ctx.arc(last.x, last.y, 1.1, 0, Math.PI * 2);
+          ctx.fillStyle = TIP_COLOR;
+          ctx.globalAlpha = 0.55 * opacity;
+          ctx.fill();
         }
 
-        ctx!.restore();
+        ctx.restore();
       }
 
-      animationId = requestAnimationFrame(draw);
+      animationId = window.requestAnimationFrame(draw);
     }
 
-    // Initialize canvas
     resizeCanvas();
 
     const resizeObserver = new ResizeObserver(resizeCanvas);
@@ -232,18 +218,19 @@ export default function Hero() {
 
     section.addEventListener("pointermove", handlePointerMove);
 
-    animationId = requestAnimationFrame(draw);
+    animationId = window.requestAnimationFrame(draw);
 
-    // Clean up animation and listeners
     return () => {
-      cancelAnimationFrame(animationId);
+      window.cancelAnimationFrame(animationId);
       resizeObserver.disconnect();
       section.removeEventListener("pointermove", handlePointerMove);
     };
   }, []);
 
-  // Update photo parallax
+  // Update photo parallax on mouse movement.
   function handleMouseMove(event: MouseEvent<HTMLElement>) {
+    if (window.matchMedia("(pointer: coarse)").matches) return;
+
     const rect = event.currentTarget.getBoundingClientRect();
 
     const x = (event.clientX - rect.left) / rect.width - 0.5;
@@ -252,9 +239,19 @@ export default function Hero() {
     setMouse({ x, y });
   }
 
-  // Reset photo position
+  // Reset the photo position.
   function handleMouseLeave() {
     setMouse({ x: 0, y: 0 });
+  }
+
+  function scrollToWork() {
+    document.getElementById("work")?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+        .matches
+        ? "auto"
+        : "smooth",
+      block: "start",
+    });
   }
 
   return (
@@ -262,7 +259,7 @@ export default function Hero() {
       ref={sectionRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="relative isolate flex min-h-[calc(100svh-5rem)] flex-col justify-center overflow-hidden px-5 py-10 pb-20 sm:px-8 sm:py-12 sm:pb-20 lg:min-h-[calc(100svh-5rem)] lg:px-12 lg:py-14 lg:pb-16"
+      className="relative isolate flex flex-col justify-start overflow-hidden px-5 pt-[clamp(2rem,3vw,3rem)] pb-16 sm:px-8 sm:pb-16 lg:px-12 lg:pb-[clamp(2.5rem,4vw,3.5rem)]"
     >
       {/* Background glow */}
       <div
@@ -280,8 +277,8 @@ export default function Hero() {
       {/* Hero content */}
       <div className="relative z-20 mx-auto grid w-full max-w-7xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
         {/* Introduction */}
-        <div className="order-1 lg:order-1">
-          <p className="mb-6 w-fit text-[10px] tracking-[0.35em] text-accent uppercase sm:mb-8 sm:text-xs">
+        <div className="order-1 min-w-0 lg:order-1">
+          <p className="mb-5 w-fit max-w-full text-[10px] tracking-[0.25em] text-accent uppercase sm:mb-8 sm:text-xs sm:tracking-[0.35em]">
             Independent Photographer · Bangladesh
           </p>
 
@@ -292,12 +289,12 @@ export default function Hero() {
                 src="/images/junayed-portrait.jpg"
                 alt="Junayed Hasan"
                 fill
-                sizes="112px"
+                sizes="(max-width: 639px) 80px, 112px"
                 className="object-cover"
               />
             </div>
 
-            <div>
+            <div className="min-w-0">
               <p className="mb-2 w-fit text-[9px] tracking-[0.25em] text-muted uppercase">
                 Behind the lens
               </p>
@@ -313,7 +310,7 @@ export default function Hero() {
           </div>
 
           {/* Hero description */}
-          <div className="mt-6 max-w-sm border-l border-accent/50 pl-5 sm:mt-9">
+          <div className="mt-5 max-w-sm border-l border-accent/50 pl-4 sm:mt-9 sm:pl-5">
             <p className="w-fit text-sm leading-7 text-muted sm:text-base sm:leading-8">
               Finding extraordinary stories in ordinary moments.
             </p>
@@ -322,11 +319,10 @@ export default function Hero() {
           {/* Portfolio link */}
           <Link
             href="#work"
-            className="group mt-7 inline-flex items-center gap-4 border-b border-border pb-3 text-xs tracking-[0.2em] uppercase transition-colors hover:border-accent sm:mt-9"
+            className="group mt-6 inline-flex min-h-11 items-center gap-4 border-b border-border pb-3 text-xs tracking-[0.2em] uppercase transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:mt-9"
           >
             Explore my work
-
-            <span className="text-accent transition-transform duration-300 group-hover:translate-x-2">
+            <span className="text-accent transition-transform duration-300 group-hover:translate-x-2 motion-reduce:transition-none">
               →
             </span>
           </Link>
@@ -346,7 +342,7 @@ export default function Hero() {
         </div>
 
         {/* Editorial photograph card */}
-        <div className="order-2 lg:order-2">
+        <div className="order-2 min-w-0 lg:order-2">
           <div className="relative mx-auto w-full max-w-[540px]">
             {/* Offset frame */}
             <div
@@ -363,7 +359,7 @@ export default function Hero() {
 
                 <span
                   aria-hidden="true"
-                  className="h-1.5 w-1.5 rounded-full bg-[#80683f]"
+                  className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#80683f]"
                 />
               </div>
 
@@ -371,7 +367,6 @@ export default function Hero() {
               <div className="relative overflow-hidden bg-surface">
                 {heroPhoto && (
                   <div key={heroPhoto.id} className="relative">
-                    {/* Photo parallax */}
                     <div
                       className="relative w-full transition-transform duration-300 ease-out motion-reduce:transition-none"
                       style={{
@@ -384,7 +379,7 @@ export default function Hero() {
                         width={1200}
                         height={900}
                         priority
-                        sizes="(max-width: 1024px) 90vw, 45vw"
+                        sizes="(max-width: 639px) 90vw, (max-width: 1023px) 85vw, 45vw"
                         className="block h-auto w-full object-contain"
                       />
                     </div>
@@ -396,13 +391,13 @@ export default function Hero() {
                     />
 
                     {/* Editorial image label */}
-                    <p className="pointer-events-none absolute top-4 left-4 text-[8px] tracking-[0.2em] text-white/90 uppercase sm:top-5 sm:left-5 sm:text-[9px]">
+                    <p className="pointer-events-none absolute top-4 left-4 text-[8px] tracking-[0.15em] text-white/90 uppercase sm:top-5 sm:left-5 sm:text-[9px] sm:tracking-[0.2em]">
                       Photography · Visual Stories
                     </p>
 
                     {/* Photo title */}
                     <div className="pointer-events-none absolute right-4 bottom-4 left-4 sm:right-6 sm:bottom-6 sm:left-6">
-                      <div className="mb-3 h-px w-8 bg-[#80683f]" />
+                      <div className="mb-3 ml-auto h-px w-8 bg-[#80683f]" />
 
                       <h2 className="text-right font-serif text-xl leading-snug text-white sm:text-2xl lg:text-3xl">
                         {heroPhoto.title}
@@ -421,24 +416,24 @@ export default function Hero() {
                     </p>
 
                     <p className="mt-1.5 text-xs leading-5 text-muted sm:text-sm">
-                      {heroPhoto?.title}
+                      A moment, preserved in time.
                     </p>
                   </div>
 
                   <span
                     aria-hidden="true"
-                    className="shrink-0 pt-1 text-lg font-light text-accent transition-transform duration-300"
+                    className="shrink-0 pt-1 text-lg font-light text-accent"
                   >
                     ↗
                   </span>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-border/70 pt-3">
-                  <p className="text-[8px] tracking-[0.2em] text-muted uppercase sm:text-[9px]">
+                <div className="mt-4 flex items-center justify-between gap-3 border-t border-border/70 pt-3">
+                  <p className="text-[8px] tracking-[0.15em] text-muted uppercase sm:text-[9px] sm:tracking-[0.2em]">
                     Moments · Light · Stories
                   </p>
 
-                  <p className="text-[8px] tracking-[0.15em] text-muted uppercase sm:text-[9px]">
+                  <p className="shrink-0 text-[8px] tracking-[0.1em] text-muted uppercase sm:text-[9px] sm:tracking-[0.15em]">
                     Bangladesh
                   </p>
                 </div>
@@ -451,18 +446,16 @@ export default function Hero() {
       {/* Mobile scroll button */}
       <button
         type="button"
-        onClick={() => {
-          document.getElementById("work")?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }}
-        className="absolute bottom-3 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-1 text-[10px] tracking-[0.25em] text-muted uppercase transition-colors hover:text-accent lg:hidden"
+        onClick={scrollToWork}
+        className="absolute bottom-2 left-1/2 z-30 flex min-h-11 -translate-x-1/2 flex-col items-center justify-center gap-0.5 text-[10px] tracking-[0.25em] text-muted uppercase transition-colors hover:text-accent focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent lg:hidden"
         aria-label="See more and scroll to selected works"
       >
         <span>See More</span>
 
-        <span className="animate-bounce text-lg" aria-hidden="true">
+        <span
+          className="animate-bounce text-lg motion-reduce:animate-none"
+          aria-hidden="true"
+        >
           ↓
         </span>
       </button>

@@ -1,0 +1,153 @@
+warning: in the working copy of 'package-lock.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/package-lock.json b/package-lock.json[m
+[1mindex 71343a6..51c0c79 100644[m
+[1m--- a/package-lock.json[m
+[1m+++ b/package-lock.json[m
+[36m@@ -8,7 +8,7 @@[m
+       "name": "junayed-photography",[m
+       "version": "0.1.0",[m
+       "dependencies": {[m
+[31m-        "next": "16.4.0",[m
+[32m+[m[32m        "next": "^16.4.2",[m
+         "react": "19.3.0",[m
+         "react-dom": "19.3.0"[m
+       },[m
+[36m@@ -1142,9 +1142,9 @@[m
+       }[m
+     },[m
+     "node_modules/@next/env": {[m
+[31m-      "version": "16.4.0",[m
+[31m-      "resolved": "https://registry.npmjs.org/@next/env/-/env-16.4.0.tgz",[m
+[31m-      "integrity": "sha512-pyLlT5oafGlX8X7xjgGNXz5dNIDSxREm+qD6i9VLSZiZFopA/XWl8NM/KPmLx/8EG/++c49iid3gNWSQW1+2dQ==",[m
+[32m+[m[32m      "version": "16.4.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@next/env/-/env-16.4.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-nTUTFH7G5/J/fmpkjVLegOkqyKOP0CEsJcMsyO4UCYeN1su+YMW/MfaSErnJskL7XM+UDK6aTvslxsRCyya/sA==",[m
+       "license": "MIT"[m
+     },[m
+     "node_modules/@next/eslint-plugin-next": {[m
+[36m@@ -1191,9 +1191,9 @@[m
+       }[m
+     },[m
+     "node_modules/@next/swc-darwin-arm64": {[m
+[31m-      "version": "16.4.0",[m
+[31m-      "resolved": "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-16.4.0.tgz",[m
+[31m-      "integrity": "sha512-yyZ+9MgViAKLLb5l1gPBGjRwnq3teNLb5Zx6JEw8LzNSTjlsnp+baUHFxTgl7PpjCmKf48VQfyipG1eBflb48Q==",[m
+[32m+[m[32m      "version": "16.4.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@next/swc-darwin-arm64/-/swc-darwin-arm64-16.4.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-ONkhFvZNFWlsEHOM/81AtxdyuJP2KRYKYR0JxPwvcu1AuPMMMgcL+wW2luldJvMtZwKtUxoSkCychW5wIeoYSw==",[m
+       "cpu": [[m
+         "arm64"[m
+       ],[m
+[36m@@ -1207,9 +1207,9 @@[m
+       }[m
+     },[m
+     "node_modules/@next/swc-darwin-x64": {[m
+[31m-      "version": "16.4.0",[m
+[31m-      "resolved": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-16.4.0.tgz",[m
+[31m-      "integrity": "sha512-RePEEejEj1Auf5s9qEcG0JbcDP3ceNUS/ofNX8AhxzgIjTVlZIHMatlp16YplcSMpsVo/ZMQHJTjbMYJznjGUg==",[m
+[32m+[m[32m      "version": "16.4.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@next/swc-darwin-x64/-/swc-darwin-x64-16.4.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-luPCMbOsCoaF+kXJEUjmjmOZg1lC3BflhmUu+ZmW4tBu2vW/4AXak8JBFvePizGkxVmNiAw/r9ra+6UviCWtWQ==",[m
+       "cpu": [[m
+         "x64"[m
+       ],[m
+[36m@@ -1223,9 +1223,9 @@[m
+       }[m
+     },[m
+     "node_modules/@next/swc-linux-arm64-gnu": {[m
+[31m-      "version": "16.4.0",[m
+[31m-      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-16.4.0.tgz",[m
+[31m-      "integrity": "sha512-HhsyCqd+NpmvDDVY/LqkAN24f+QVvXh3ie+PfcwKinWL2Mu826JymQxJXGjAIfmJ4VlHjp4Pe/nZtXtUoEMAqw==",[m
+[32m+[m[32m      "version": "16.4.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-gnu/-/swc-linux-arm64-gnu-16.4.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-xhwFTAncJyaCNy5KqKKuKaIIdCy1/1ZV1s5S1G0hhT7wGMkDTlfJ6aQbfRFnIG/s3/kDrxQ8aycVe+c5QnP8ow==",[m
+       "cpu": [[m
+         "arm64"[m
+       ],[m
+[36m@@ -1242,9 +1242,9 @@[m
+       }[m
+     },[m
+     "node_modules/@next/swc-linux-arm64-musl": {[m
+[31m-      "version": "16.4.0",[m
+[31m-      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-16.4.0.tgz",[m
+[31m-      "integrity": "sha512-sN9Pf+Zh+RpZAOmbR7d8KAA8T61CVhawtbEJ2Bk6QrRzx6Z/6haaF4UiwBzytM96GRRRWZh9/WALIEO3npMamA==",[m
+[32m+[m[32m      "version": "16.4.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@next/swc-linux-arm64-musl/-/swc-linux-arm64-musl-16.4.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-T1PNmfbPcxr5ndtWUL/3wQtLXsz808lq6sc2GrNT5k2oquF7UyqZddHSuAewHVsWsGXe6nsl9HoN1YNriVjuSg==",[m
+       "cpu": [[m
+         "arm64"[m
+       ],[m
+[36m@@ -1261,9 +1261,9 @@[m
+       }[m
+     },[m
+     "node_modules/@next/swc-linux-x64-gnu": {[m
+[31m-      "version": "16.4.0",[m
+[31m-      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.4.0.tgz",[m
+[31m-      "integrity": "sha512-D5M5xLWQVd1CvR+L7BickM1weRfmM41x3L1NWcnKY/oyJJqr1qwaCgmu3dMAhLBOMdZwSuDCRV6DJRRpiUkbDQ==",[m
+[32m+[m[32m      "version": "16.4.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-gnu/-/swc-linux-x64-gnu-16.4.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-N9cDUOCGtkJG5PNKDFZUF3xXndrJJcpLp121uAGjIGvO/U2p9tfdNOM9htj7+5f72l0m8rMw/cvYacUJBQoudg==",[m
+       "cpu": [[m
+         "x64"[m
+       ],[m
+[36m@@ -1280,9 +1280,9 @@[m
+       }[m
+     },[m
+     "node_modules/@next/swc-linux-x64-musl": {[m
+[31m-      "version": "16.4.0",[m
+[31m-      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-16.4.0.tgz",[m
+[31m-      "integrity": "sha512-8d5WLS6a9YalqpOgXdlbvonFu+sIgjA+CO6tGzetrpPVcUL56foa7B7664h41rAlbLi5fJwK4vWji3zf4QDy+w==",[m
+[32m+[m[32m      "version": "16.4.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@next/swc-linux-x64-musl/-/swc-linux-x64-musl-16.4.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-yY2uh1YhX6ufuYy2FCbw1dqblbhI57GLYAJfCkqD9auTv6pLrH67Uccjc3QMKBeCYAG6lkgu08ExmX1bbjejjQ==",[m
+       "cpu": [[m
+         "x64"[m
+       ],[m
+[36m@@ -1299,9 +1299,9 @@[m
+       }[m
+     },[m
+     "node_modules/@next/swc-win32-arm64-msvc": {[m
+[31m-      "version": "16.4.0",[m
+[31m-      "resolved": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-16.4.0.tgz",[m
+[31m-      "integrity": "sha512-sQuOIiW3snb48UwrBcDMvFA/u03qtw2LeuSIxFIQ9AJuW9UG/4Ddsfo+eV73PnZwBhyncMtsKVh7PrzMol2/fA==",[m
+[32m+[m[32m      "version": "16.4.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@next/swc-win32-arm64-msvc/-/swc-win32-arm64-msvc-16.4.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-j/ArWRIHpMMB6wYLMhr2puTguBt70lNU/Cmjl9p6dTDE8DGknYJMP9PdwPk2dqpCNL/KIX9yfngDvIesxJPmsg==",[m
+       "cpu": [[m
+         "arm64"[m
+       ],[m
+[36m@@ -1315,9 +1315,9 @@[m
+       }[m
+     },[m
+     "node_modules/@next/swc-win32-x64-msvc": {[m
+[31m-      "version": "16.4.0",[m
+[31m-      "resolved": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-16.4.0.tgz",[m
+[31m-      "integrity": "sha512-6/33lCuxpdHUy27RegyGM/5uTpF7YZd3UR4D0gpkOA/tWY5YR7msbQjqPgCZmSmxrrTLGCXYA4A8vT2H5DPGTQ==",[m
+[32m+[m[32m      "version": "16.4.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/@next/swc-win32-x64-msvc/-/swc-win32-x64-msvc-16.4.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-AA4edyWHDko3NCSo0x6GomsdgFb0oR1J3MXU1b5xt6FRFg4AucrMPW3S0hCe/9onU0O1BbpGQBsqo1r0Gneu1g==",[m
+       "cpu": [[m
+         "x64"[m
+       ],[m
+[36m@@ -5282,12 +5282,12 @@[m
+       "license": "MIT"[m
+     },[m
+     "node_modules/next": {[m
+[31m-      "version": "16.4.0",[m
+[31m-      "resolved": "https://registry.npmjs.org/next/-/next-16.4.0.tgz",[m
+[31m-      "integrity": "sha512-N2C+9q89Z/oLrsepSRS4jRMtwmUZAoZuAHU0e9T6+sAB5DdhADmrnOW+zjYijlrYFmVfmQhGVGy9eMFoB7UgKg==",[m
+[32m+[m[32m      "version": "16.4.2",[m
+[32m+[m[32m      "resolved": "https://registry.npmjs.org/next/-/next-16.4.2.tgz",[m
+[32m+[m[32m      "integrity": "sha512-r+oBJojfefUjOiWkBhXgLS+igxX/7BWyK59uHnyOyplMSLtBZ+QLP3okrdYTbrfrbrmNTVWLBPaHDX9KRaIt3w==",[m
+       "license": "MIT",[m
+       "dependencies": {[m
+[31m-        "@next/env": "16.4.0",[m
+[32m+[m[32m        "@next/env": "16.4.2",[m
+         "@swc/helpers": "0.5.23",[m
+         "baseline-browser-mapping": "^2.9.19",[m
+         "caniuse-lite": "^1.0.30001579",[m
+[36m@@ -5301,15 +5301,15 @@[m
+         "node": ">=20.9.0"[m
+       },[m
+       "optionalDependenc

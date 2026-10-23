@@ -1,6 +1,7 @@
 
 @import "tailwindcss";
 
+/* Global scrolling */
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 24px;
@@ -132,3 +133,7 @@ body {
     animation: none;
   }
 }
+
+
+
+

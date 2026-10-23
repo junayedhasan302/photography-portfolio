@@ -25,62 +25,95 @@ export default async function PhotoDetailsPage({
       <Navbar />
 
       <main className="min-h-screen bg-background px-5 py-10 text-foreground sm:px-8 sm:py-14 lg:px-12">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-7xl">
+          {/* Back Navigation */}
           <Link
             href="/gallery"
-            className="text-sm text-muted transition hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+            className="inline-flex items-center gap-2 text-sm text-muted transition-colors duration-300 hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
           >
-            ← Back to Gallery
+            <span aria-hidden="true">←</span>
+            Back to Gallery
           </Link>
 
-          <div className="mt-8 grid gap-8 md:grid-cols-2 md:items-start lg:gap-12">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-surface-hover">
-              <Image
-                src={photo.src}
-                alt={photo.title}
-                fill
-                priority
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-contain"
-              />
+          {/* Photo Details */}
+          <div className="mt-8 grid gap-8 md:grid-cols-[1.15fr_0.85fr] md:items-start lg:mt-12 lg:gap-16">
+            {/* Image */}
+            <div>
+              <div className="relative flex min-h-[280px] items-center justify-center overflow-hidden rounded-sm bg-surface-hover sm:min-h-[400px] md:min-h-[520px]">
+                <Image
+                  src={photo.src}
+                  alt={photo.title}
+                  width={1600}
+                  height={1200}
+                  priority
+                  sizes="(max-width: 768px) 100vw, 58vw"
+                  className="h-auto max-h-[75vh] w-full object-contain"
+                />
+              </div>
+
+              <p className="mt-3 text-xs leading-5 text-muted">
+                A photograph from the {photo.category} collection.
+              </p>
             </div>
 
-            <div className="py-2">
-              <p className="text-xs tracking-[0.25em] text-accent uppercase">
+            {/* Information */}
+            <div className="py-2 md:sticky md:top-28">
+              <p className="text-[10px] tracking-[0.3em] text-accent uppercase sm:text-xs">
                 {photo.category}
               </p>
 
-              <h1 className="mt-4 text-3xl font-light sm:text-4xl lg:text-5xl">
+              <h1 className="mt-4 text-3xl leading-tight font-light tracking-tight sm:text-4xl lg:text-5xl">
                 {photo.title}
               </h1>
 
-              <div className="my-6 h-px w-16 bg-accent" />
+              <div
+                aria-hidden="true"
+                className="my-6 h-px w-16 bg-accent"
+              />
 
-              <p className="text-sm leading-7 text-muted">
+              <p className="max-w-xl text-sm leading-7 text-muted sm:text-base sm:leading-8">
                 {photo.description ||
                   "The story behind this photograph is coming soon."}
               </p>
 
+              {/* Metadata */}
               <div className="mt-10 border-t border-border pt-6">
-                <p className="text-xs tracking-[0.2em] text-muted uppercase">
+                <p className="text-[10px] tracking-[0.25em] text-muted uppercase sm:text-xs">
                   Photograph Details
                 </p>
 
-                <p className="mt-3 text-sm text-muted">
-                  Photo ID: {photo.id}
-                </p>
+                <dl className="mt-5 space-y-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <dt className="text-sm text-muted">Photo ID</dt>
+                    <dd className="text-sm text-foreground">{photo.id}</dd>
+                  </div>
 
-                <p className="mt-2 text-sm text-muted">
-                  Category: {photo.category}
-                </p>
+                  <div className="flex items-start justify-between gap-4">
+                    <dt className="text-sm text-muted">Collection</dt>
+                    <dd className="text-right text-sm text-foreground">
+                      {photo.category}
+                    </dd>
+                  </div>
+                </dl>
               </div>
 
-              <Link
-                href="/gallery"
-                className="mt-8 inline-block rounded-sm border border-border px-5 py-3 text-sm transition hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
-              >
-                Explore More Photos
-              </Link>
+              {/* Navigation */}
+              <div className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  href="/gallery"
+                  className="inline-flex items-center justify-center gap-2 rounded-sm bg-accent px-5 py-3 text-sm text-background transition-opacity duration-300 hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                >
+                  Explore More Photos
+                  <span aria-hidden="true">↗</span>
+                </Link>
+
+                <Link
+                  href="/"
+                  className="inline-flex items-center justify-center rounded-sm border border-border px-5 py-3 text-sm transition-colors duration-300 hover:border-accent hover:text-accent focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+                >
+                  Home
+                </Link>
+              </div>
             </div>
           </div>
         </div>
