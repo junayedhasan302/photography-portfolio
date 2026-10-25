@@ -342,7 +342,7 @@ export default function Hero() {
             </p>
 
             <p className="mt-2 text-[9px] tracking-[0.2em] text-muted/70 uppercase">
-              Gazipur, Bangladesh
+              Dhaka, Bangladesh
             </p>
           </div>
         </div>
