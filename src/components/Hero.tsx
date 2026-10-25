@@ -45,14 +45,19 @@ export default function Hero() {
 
   // Draw the signature trail.
   useEffect(() => {
-    const section = sectionRef.current;
-    const canvas = canvasRef.current;
+    const sectionElement = sectionRef.current;
+    const canvasElement = canvasRef.current;
 
-    if (!section || !canvas) return;
+    if (!sectionElement || !canvasElement) return;
 
-    const ctx = canvas.getContext("2d");
+    const context = canvasElement.getContext("2d");
 
-    if (!ctx) return;
+    if (!context) return;
+
+    // Keep non-null references for nested animation functions.
+    const section: HTMLElement = sectionElement;
+    const canvas: HTMLCanvasElement = canvasElement;
+    const ctx: CanvasRenderingContext2D = context;
 
     const motionQuery = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
@@ -246,8 +251,9 @@ export default function Hero() {
 
   function scrollToWork() {
     document.getElementById("work")?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
-        .matches
+      behavior: window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches
         ? "auto"
         : "smooth",
       block: "start",
