@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -150,6 +149,7 @@ export default function Navbar() {
 
         {/* Actions */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+
           {/* Theme Toggle */}
           <button
             type="button"
@@ -163,36 +163,56 @@ export default function Navbar() {
             }}
             aria-label={`Switch to ${isDark ? "light" : "dark"} theme`}
             title={`Switch to ${isDark ? "light" : "dark"} theme`}
-            className={`flex size-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
+            className={`relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent motion-reduce:transition-none ${
               isDark
-                ? "border-white/20 text-white hover:border-[#b9a887]/60 hover:bg-white/5"
-                : "border-[#d8d0c0] text-neutral-800 hover:border-[#80683f]/60 hover:bg-[#80683f]/5"
+                ? "border-white/20 text-[#d0c1a1] hover:border-[#b9a887]/60 hover:bg-white/5"
+                : "border-[#d8d0c0] text-[#80683f] hover:border-[#80683f]/60 hover:bg-[#80683f]/5"
             }`}
           >
-            {isDark ? (
+            {/* Sun Icon — Light Theme */}
+            <span
+              className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-in-out motion-reduce:transition-none ${
+                isDark
+                  ? "translate-x-5 rotate-90 scale-75 opacity-0"
+                  : "translate-x-0 rotate-0 scale-100 opacity-100"
+              }`}
+              aria-hidden="true"
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="size-5"
-                aria-hidden="true"
               >
                 <circle cx="12" cy="12" r="4" />
-                <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l-1.42-1.42m11.3-11.3 1.42-1.42" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
               </svg>
-            ) : (
+            </span>
+
+            {/* Moon Icon — Dark Theme */}
+            <span
+              className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-in-out motion-reduce:transition-none ${
+                isDark
+                  ? "translate-x-0 rotate-0 scale-100 opacity-100"
+                  : "-translate-x-5 -rotate-90 scale-75 opacity-0"
+              }`}
+              aria-hidden="true"
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.7"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="size-5"
-                aria-hidden="true"
               >
                 <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z" />
               </svg>
-            )}
+            </span>
           </button>
 
           {/* Desktop Contact */}
@@ -212,7 +232,9 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setIsMenuOpen((open) => !open)}
-            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-label={
+              isMenuOpen ? "Close navigation menu" : "Open navigation menu"
+            }
             aria-expanded={isMenuOpen}
             aria-controls="mobile-navigation"
             className={`flex size-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:hidden ${
