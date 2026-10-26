@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { useTheme } from "@/components/ThemeProvider";
 
 const navigationItems = [
@@ -12,13 +13,70 @@ const navigationItems = [
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const pathname = usePathname();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const highlightTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const isDark = theme === "dark";
 
   const closeMenu = () => setIsMenuOpen(false);
+
+  const navigateToSection = (id: string) => {
+    closeMenu();
+
+    if (pathname !== "/") return;
+
+    const section =
+      id === "albums"
+        ? document.getElementById("albums-flash")
+        : document.getElementById(id);
+
+    if (!section) return;
+
+    if (highlightTimer.current) {
+      clearTimeout(highlightTimer.current);
+      highlightTimer.current = null;
+    }
+
+    // Remove any previous temporary section theme.
+    document.querySelectorAll(".section-theme-flash").forEach((element) => {
+      element.classList.remove(
+        "section-theme-flash",
+        "section-theme-light",
+        "section-theme-dark",
+      );
+    });
+
+    // The section receives the opposite of the permanent site theme.
+    section.classList.add(
+      "section-theme-flash",
+      isDark ? "section-theme-light" : "section-theme-dark",
+    );
+
+    window.history.replaceState(null, "", `/#${id}`);
+
+    section.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+      block: "start",
+    });
+
+    // Restore the section after one second.
+    highlightTimer.current = setTimeout(() => {
+      section.classList.remove(
+        "section-theme-flash",
+        "section-theme-light",
+        "section-theme-dark",
+      );
+
+      highlightTimer.current = null;
+    }, 1000);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,21 +101,23 @@ export default function Navbar() {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
 
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     if (!isMenuOpen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        closeMenu();
-      }
+      if (event.key === "Escape") closeMenu();
     };
 
     document.addEventListener("keydown", handleKeyDown);
 
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, [isMenuOpen]);
 
   useEffect(() => {
@@ -67,6 +127,14 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    return () => {
+      if (highlightTimer.current) {
+        clearTimeout(highlightTimer.current);
+      }
+    };
+  }, []);
 
   const navText = isDark
     ? "text-white/65 hover:text-[#d0c1a1]"
@@ -92,7 +160,6 @@ export default function Navbar() {
         aria-label="Main navigation"
         className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-3.5 sm:gap-6 sm:px-8 sm:py-4 lg:px-12"
       >
-        {/* Brand: replace this text with your logo later */}
         <Link
           href="/"
           onClick={closeMenu}
@@ -124,6 +191,12 @@ export default function Navbar() {
                 key={item.id}
                 href={item.href}
                 aria-current={isActive ? "location" : undefined}
+                onClick={(event) => {
+                  if (pathname === "/") {
+                    event.preventDefault();
+                    navigateToSection(item.id);
+                  }
+                }}
                 className={`group relative py-2 font-serif text-sm tracking-wide transition-colors duration-200 ${
                   isActive
                     ? isDark
@@ -149,7 +222,6 @@ export default function Navbar() {
 
         {/* Actions */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-
           {/* Theme Toggle */}
           <button
             type="button"
@@ -169,7 +241,7 @@ export default function Navbar() {
                 : "border-[#d8d0c0] text-[#80683f] hover:border-[#80683f]/60 hover:bg-[#80683f]/5"
             }`}
           >
-            {/* Sun Icon — Light Theme */}
+            {/* Sun icon */}
             <span
               className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-in-out motion-reduce:transition-none ${
                 isDark
@@ -188,11 +260,11 @@ export default function Navbar() {
                 className="size-5"
               >
                 <circle cx="12" cy="12" r="4" />
-                <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l-1.42-1.42m11.3-11.3 1.42-1.42" />
               </svg>
             </span>
 
-            {/* Moon Icon — Dark Theme */}
+            {/* Moon icon */}
             <span
               className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-in-out motion-reduce:transition-none ${
                 isDark
@@ -224,8 +296,7 @@ export default function Navbar() {
                 : "border-[#80683f]/45 text-[#624e2d] hover:bg-[#80683f] hover:text-white"
             }`}
           >
-            Contact
-            <span aria-hidden="true">↗</span>
+            Contact <span aria-hidden="true">↗</span>
           </Link>
 
           {/* Mobile Menu Toggle */}
@@ -287,7 +358,14 @@ export default function Navbar() {
                 <Link
                   key={item.id}
                   href={item.href}
-                  onClick={closeMenu}
+                  onClick={(event) => {
+                    if (item.id !== "contact" && pathname === "/") {
+                      event.preventDefault();
+                      navigateToSection(item.id);
+                    } else {
+                      closeMenu();
+                    }
+                  }}
                   className={`flex items-center justify-between border-b px-3 py-4 font-serif text-sm tracking-wide transition-colors last:border-b-0 ${mobileNavText}`}
                 >
                   <span className="flex items-center gap-3">

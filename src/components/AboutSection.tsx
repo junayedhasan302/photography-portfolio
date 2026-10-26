@@ -9,9 +9,8 @@ export default function AboutSection() {
       className="mx-auto max-w-7xl scroll-mt-24 px-5 py-20 sm:px-8 sm:py-24 lg:px-12 lg:py-28"
     >
       <div className="grid gap-8 sm:gap-10 lg:grid-cols-2 lg:items-center lg:gap-20">
-        {/* Section introduction */}
         <div>
-          <p className="mb-4 text-[10px] tracking-[0.3em] text-[#b9a887] uppercase sm:mb-5 sm:text-xs">
+          <p className="mb-4 text-[10px] tracking-[0.3em] text-accent uppercase sm:mb-5 sm:text-xs">
             Behind the Lens
           </p>
 
@@ -23,7 +22,6 @@ export default function AboutSection() {
           </h2>
         </div>
 
-        {/* Photographer introduction */}
         <div className="max-w-xl">
           <div className="space-y-5 sm:space-y-6">
             <p className="text-sm leading-7 text-muted sm:text-base sm:leading-8">
@@ -45,9 +43,10 @@ export default function AboutSection() {
 
           <Link
             href="#contact"
-            className="group mt-7 inline-flex min-h-11 items-center gap-2 border-b border-[#b9a887] pb-2 text-sm transition-colors hover:text-[#b9a887] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:mt-8"
+            className="group mt-7 inline-flex min-h-11 items-center gap-2 border-b border-accent pb-2 text-sm transition-colors hover:text-accent-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent sm:mt-8"
           >
             Let&apos;s connect
+
             <span
               aria-hidden="true"
               className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none"

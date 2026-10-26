@@ -8,9 +8,8 @@ export default function SelectedWorks() {
     <section
       id="work"
       aria-labelledby="selected-works-heading"
-      className="mx-auto max-w-7xl px-5 pt-32 pb-20 sm:px-8 sm:pt-36 sm:pb-28 lg:px-12 lg:pt-40"
+      className="mx-auto max-w-7xl scroll-mt-24 px-5 pt-32 pb-20 sm:px-8 sm:pt-36 sm:pb-28 lg:px-12 lg:pt-40"
     >
-      {/* Section heading */}
       <div className="mb-10 flex items-end justify-between gap-4 sm:mb-12">
         <div>
           <p className="mb-3 text-[10px] tracking-[0.3em] text-accent uppercase sm:text-xs">
@@ -37,7 +36,6 @@ export default function SelectedWorks() {
         </Link>
       </div>
 
-      {/* Featured photo grid */}
       <div className="grid grid-cols-1 gap-x-5 gap-y-9 sm:grid-cols-2 sm:gap-y-10 lg:grid-cols-3 lg:gap-x-6">
         {featuredPhotos.map((photo, index) => (
           <article
@@ -46,7 +44,6 @@ export default function SelectedWorks() {
               index === 0 ? "sm:col-span-2 lg:col-span-2" : ""
             }`}
           >
-            {/* Photo */}
             <div className="relative aspect-[4/3] overflow-hidden rounded-sm bg-surface">
               <Image
                 src={photo.src}
@@ -61,7 +58,6 @@ export default function SelectedWorks() {
               />
             </div>
 
-            {/* Photo information */}
             <div className="mt-4 sm:mt-5">
               <h3 className="text-base font-medium leading-snug tracking-tight transition-colors duration-300 group-hover:text-accent">
                 {photo.title}
